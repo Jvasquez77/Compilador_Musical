@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "parser.tab.h"
+#include "token.h"
 
 extern int yyerror(const char* msg);
 %}
@@ -17,8 +17,8 @@ DIGITO      [0-9]
 ENTERO      -?{DIGITO}+
 COMENTARIO  "//".*
 NOTA_LAT    "Do"|"Re"|"Mi"|"Fa"|"Sol"|"La"|"Si"
-NOTA_ING    "C"|"D"|"E"|"F"|"G"|"A"|"B"
-ALTER       "b"|"#"|"♭"
+NOTA_ENG    "C"|"D"|"E"|"F"|"G"|"A"|"B"
+ALTER       "b"|"#"
 
 %%
 {ESPACIO}       { /* Ignorar espacios */ }
@@ -48,13 +48,16 @@ ALTER       "b"|"#"|"♭"
 "Si"|"B"        { return TOKEN_NOTA_SI; }
 
 "#"             { return TOKEN_SOSTENIDO; }
-"b"|"♭"         { return TOKEN_BEMOL; }
+"b"             { return TOKEN_BEMOL; }
 
-("C"|"D"|"E"|"F"|"G"|"A"|"B")[#b♭]?[0-9] { return TOKEN_NOTA_COMPLETA; }
-("Do"|"Re"|"Mi"|"Fa"|"Sol"|"La"|"Si")[#b♭]?[0-9] { return TOKEN_NOTA_COMPLETA; }
+("Do"|"Re"|"Mi"|"Fa"|"Sol"|"La"|"Si"|"C"|"D"|"E"|"F"|"G"|"A"|"B")[#b]?[0-9] { return TOKEN_NOTA_COMPLETA; }
 
 [a-zA-Z_][a-zA-Z0-9_]* { return TOKEN_IDENTIFIER; }
 
-.               { /* Ignorar caracteres no reconocidos */ }
+.               { 
+                  char msg[100];
+                  sprintf(msg, "Carácter no reconocido: %s", yytext);
+                  yyerror(msg); 
+                }
 
 %% 
