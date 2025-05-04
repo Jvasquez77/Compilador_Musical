@@ -1,0 +1,28 @@
+Tempo 60
+Compas 7/8
+Tonalidad Si M
+
+// Patrones rítmicos en 7/8 (agrupados 2+2+3)
+Sol4 Corchea
+Sol4 Corchea
+La4 Corchea
+La4 Corchea
+Si4 Corchea
+Si4 Corchea
+Si4 Corchea
+
+// Otro patrón rítmico (3+2+2)
+Do#5 Corchea
+Do#5 Corchea
+Do#5 Corchea
+Re5 Corchea
+Re5 Corchea
+Mi5 Corchea
+Mi5 Corchea
+
+// Mezcla de duraciones
+Fa#4 Negra
+Sol#4 Corchea
+La4 Corchea
+Si4 Negra
+Do#5 Semicorchea 
