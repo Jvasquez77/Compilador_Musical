@@ -2,7 +2,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "expression.hpp"
 #include "token.h"
+
+// Requerido para usar el mismo YYSTYPE que el parser
+#define YYSTYPE Expression*
 
 extern int yyerror(const char* msg);
 %}
@@ -55,7 +59,7 @@ ALTER       "b"|"#"
 
 .               { 
                   char msg[100];
-                  sprintf(msg, "Carácter no reconocido: %s", yytext);
+                  snprintf(msg, sizeof(msg), "Carácter no reconocido: %s", yytext);
                   yyerror(msg); 
                 }
 
