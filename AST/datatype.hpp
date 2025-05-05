@@ -6,7 +6,7 @@ enum class DataType {
     NOTE,          // Representa la nota musical (Do, Re, Mi, etc.)
     DURATION,       // Representa la duración de una nota (redonda, blanca, negra, etc.)
     TEMPO,          // Representa la velocidad de ejecución de la pieza musical
-    TIME_SIGNATURE, // Representa el compás o medida (4/4, 3/4, etc.)
+    TIME_SIGNATURE, // Representa el compás (4/4, 3/4, etc.)
     KEY             // Representa la tonalidad de la pieza musical (Do mayor, La menor, etc.)
 };
 

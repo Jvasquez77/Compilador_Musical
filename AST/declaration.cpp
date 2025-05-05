@@ -36,9 +36,9 @@ bool TempoDeclaration::resolve_names(SymbolTable& table) noexcept{
         return false;
     }
     
-    if (this->tempo->get_bpm() <= 0)
-    {
-        std::cerr << "Error: El tempo debe ser positivo.\n";
+    int bpm = this->tempo->get_bpm();
+    if (bpm > 20 && bpm < 200){
+        std::cerr << "Error: El tempo debe estar en el rango de Larghissimo a Prestissimo.\n";
         return false;
     }
     
@@ -85,9 +85,8 @@ bool TimeSignatureDeclaration::resolve_names(SymbolTable& table) noexcept{
     int numerator = this->time_signature->get_numerator();
     int denominator = this->time_signature->get_denominator();
     
-    if (numerator <= 0)
-    {
-        std::cerr << "Error: El numerador del compás debe ser positivo.\n";
+    if (numerator <= 1 && numerator > 12){
+        std::cerr << "Error: El numerador del compás debe ser mayor a 1 y menor a 12.\n";
         return false;
     }
     

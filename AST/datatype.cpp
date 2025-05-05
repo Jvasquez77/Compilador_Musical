@@ -57,7 +57,7 @@ void Key::destroy() noexcept {
 }
 
 bool Key::resolve_names(SymbolTable& /*table*/) noexcept {
-    return true; // Los tipos de datos no necesitan resolver nombres
+    return true; 
 }
 
 // implementacion de la nota
@@ -85,7 +85,7 @@ void Note::destroy() noexcept {
 }
 
 bool Note::resolve_names(SymbolTable& /*table*/) noexcept {
-    return true; // Los tipos de datos no necesitan resolver nombres
+    return true; 
 }
 
 // implementacion del tempo
@@ -109,7 +109,7 @@ void Tempo::destroy() noexcept {
 }
 
 bool Tempo::resolve_names(SymbolTable& /*table*/) noexcept {
-    return true; // Los tipos de datos no necesitan resolver nombres
+    return true; 
 }
 
 // implementacion del compás

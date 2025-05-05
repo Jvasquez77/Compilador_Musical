@@ -48,7 +48,7 @@ int main() {
     
     // Agregar las declaraciones iniciales
     program->add_declaration(new TempoDeclaration(60));
-    program->add_declaration(new TimeSignatureDeclaration(7, 8));
+    program->add_declaration(new TimeSignatureDeclaration(1000, 2));
     program->add_declaration(new KeyDeclaration("Si", KeyMode::MAYOR));
     
     // Primer grupo rítmico
