@@ -60,8 +60,12 @@ bool NoteExpression::resolve_names(SymbolTable& table) noexcept{
     // Verificar que la nota sea válida
     std::string note_name = this->note->get_note_name();
     std::vector<std::string> valid_notes = {"Do", "Re", "Mi", "Fa", "Sol", "La", "Si", 
-                                          "Do#", "Re#", "Fa#", "Sol#", "La#",
-                                          "Reb", "Mib", "Solb", "Lab", "Sib"};
+                                          "Do#", "Re#", "Fa#", "Sol#", "La#", "Si#",
+                                          "Dob", "Reb", "Mib", "Solb", "Lab", "Sib",
+                                          "C", "D", "E", "F", "G", "A", "B",
+                                          "Cb", "Db", "Eb", "Gb", "Ab", "Bb",
+                                          "C#", "D#", "F#", "G#", "A#", "B#"
+                                          };
     
     bool valid_note = false;
     for (const auto& note : valid_notes)
@@ -79,11 +83,11 @@ bool NoteExpression::resolve_names(SymbolTable& table) noexcept{
         return false;
     }
     
-    // Verificar que la octava esté en un rango válido (0-8)
+    // Verificar que la octava esté en un rango válido (1-8)
     int octave = this->note->get_octave();
-    if (octave < 0 || octave > 8)
+    if (octave < 1 || octave > 8)
     {
-        std::cerr << "Error: Octava fuera de rango (0-8): " << octave << ".\n";
+        std::cerr << "Error: Octava fuera de rango (1-8): " << octave << ".\n";
         return false;
     }
     

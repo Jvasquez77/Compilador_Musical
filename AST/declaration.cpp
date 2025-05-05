@@ -37,7 +37,7 @@ bool TempoDeclaration::resolve_names(SymbolTable& table) noexcept{
     }
     
     int bpm = this->tempo->get_bpm();
-    if (bpm > 20 && bpm < 200){
+    if (bpm < 20 || bpm > 200){
         std::cerr << "Error: El tempo debe estar en el rango de Larghissimo a Prestissimo.\n";
         return false;
     }
@@ -85,7 +85,7 @@ bool TimeSignatureDeclaration::resolve_names(SymbolTable& table) noexcept{
     int numerator = this->time_signature->get_numerator();
     int denominator = this->time_signature->get_denominator();
     
-    if (numerator <= 1 && numerator > 12){
+    if (numerator <= 1 || numerator > 12){
         std::cerr << "Error: El numerador del compás debe ser mayor a 1 y menor a 12.\n";
         return false;
     }
@@ -139,7 +139,13 @@ bool KeyDeclaration::resolve_names(SymbolTable& table) noexcept{
     // Verificar que la nota raíz sea válida
     std::string root = this->key->get_root_note();
     // Lista de notas musicales válidas
-    std::vector<std::string> valid_notes = {"Do", "Re", "Mi", "Fa", "Sol", "La", "Si", "Do#", "Re#", "Fa#", "Sol#", "La#", "Reb", "Mib", "Solb", "Lab", "Sib"};
+    std::vector<std::string> valid_notes = {"Do", "Re", "Mi", "Fa", "Sol", "La", "Si", 
+                                          "Do#", "Re#", "Fa#", "Sol#", "La#", "Si#",
+                                          "Dob", "Reb", "Mib", "Solb", "Lab", "Sib",
+                                          "C", "D", "E", "F", "G", "A", "B",
+                                          "Cb", "Db", "Eb", "Gb", "Ab", "Bb",
+                                          "C#", "D#", "F#", "G#", "A#", "B#"
+                                          };
     
     bool valid_root = false;
     for (const auto& note : valid_notes)
