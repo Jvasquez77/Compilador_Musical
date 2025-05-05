@@ -2,6 +2,6 @@
 
 ## Integrantes
 - Lorena Fernandez
-- Nelson Vivas
+- Julio Vasquez
 
 La documentación necesaria para entender el código se encuentra en la carpeta `docs`. 
