@@ -7,7 +7,7 @@ CC = clang
 CXXFLAGS = -Wall -Wextra -pedantic -I.
 
 # Definir archivos objeto necesarios
-OBJ = ast_node_interface.o datatype.o declaration.o expression.o statement.o
+OBJ = ast_node_interface.o datatype.o declaration.o expression.o statement.o ../Semantic_Analysis/symbol_table.o
 
 # Target por defecto
 all: demo_c_function
@@ -39,7 +39,10 @@ expression.o: expression.cpp expression.hpp datatype.hpp ast_node_interface.hpp
 statement.o: statement.cpp statement.hpp expression.hpp ast_node_interface.hpp
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
-demo_c_function.o: demo_c_function.cpp ast_node_interface.hpp datatype.hpp declaration.hpp expression.hpp statement.hpp
+../Semantic_Analysis/symbol_table.o: ../Semantic_Analysis/symbol_table.cpp ../Semantic_Analysis/symbol_table.hpp
+	$(CXX) $(CXXFLAGS) -c -o $@ $<
+
+demo_c_function.o: demo_c_function.cpp ast_node_interface.hpp datatype.hpp declaration.hpp expression.hpp statement.hpp ../Semantic_Analysis/symbol_table.hpp
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
 # Regla genérica para compilar archivos .cpp a .o (para cualquier otro archivo)
@@ -48,7 +51,7 @@ demo_c_function.o: demo_c_function.cpp ast_node_interface.hpp datatype.hpp decla
 
 # Target para limpiar archivos objeto y ejecutables
 clean:
-	rm -f *.o demo_c_function
+	rm -f *.o ../Semantic_Analysis/*.o demo_c_function
 
 # Declarar targets que no son archivos
 .PHONY: all clean test run 

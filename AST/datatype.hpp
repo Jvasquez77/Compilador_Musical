@@ -1,7 +1,9 @@
 #pragma once
 
-#include "ast_node_interface.hpp"
 #include <string>
+
+// Forward declaration
+class ASTNodeInterface;
 
 enum class DataType {
     NOTE,          // Representa la nota musical (Do, Re, Mi, etc.)
@@ -11,10 +13,13 @@ enum class DataType {
     KEY             // Representa la tonalidad de la pieza musical (Do mayor, La menor, etc.)
 };
 
-class Datatype : public ASTNodeInterface
+class Datatype
 {
 public:
+    virtual ~Datatype() noexcept = default;
     virtual DataType get_type() const noexcept = 0;
+    virtual std::string to_string() const noexcept = 0;
+    virtual void destroy() noexcept = 0;
 };
 
 enum class DurationType {
@@ -71,7 +76,7 @@ public:
     void destroy() noexcept override;
 
 private:
-    std::string note_name;  // Includes alterations (e.g., "Do#", "Sib")
+    std::string note_name;  // Alteraciones (e.g., "Do#", "Sib")
     int octave;
 };
 
@@ -89,7 +94,7 @@ private:
     int bpm;  
 };
 
-class TimeSignature : public Datatype
+class TimeSignature : public Datatype // Representa el compás (4/4, 3/4, etc.)
 {
 public:
     TimeSignature(int numerator, int denominator) noexcept;

@@ -38,6 +38,7 @@
 #include "declaration.hpp"
 #include "expression.hpp"
 #include "statement.hpp"
+#include "../Semantic_Analysis/symbol_table.hpp"
 #include <iostream>
 #include <string>
 
@@ -108,6 +109,33 @@ public:
                 delete stmt;
             }
         }
+    }
+
+    // Implementación del método resolve_names
+    bool resolve_names(SymbolTable& table) noexcept override {
+        bool result = true;
+        
+        // Entrar en un nuevo ámbito
+        table.enter_scope();
+        
+        // Resolver nombres en todas las declaraciones
+        for (auto decl : declarations) {
+            if (decl && !decl->resolve_names(table)) {
+                result = false;
+            }
+        }
+        
+        // Resolver nombres en todos los statements
+        for (auto stmt : statements) {
+            if (stmt && !stmt->resolve_names(table)) {
+                result = false;
+            }
+        }
+        
+        // Salir del ámbito
+        table.exit_scope();
+        
+        return result;
     }
 
 private:

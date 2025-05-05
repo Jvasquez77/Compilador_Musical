@@ -4,14 +4,12 @@
 #include "datatype.hpp"
 #include <string>
 
-class Expression : public ASTNodeInterface
-{
+class Expression : public ASTNodeInterface{
 public:
     virtual DataType get_expression_type() const noexcept = 0;
 };
 
-class NoteExpression : public Expression
-{
+class NoteExpression : public Expression{
 public:
     NoteExpression(const std::string& note_name, int octave) noexcept;
 
@@ -20,13 +18,13 @@ public:
     DataType get_expression_type() const noexcept override;
     std::string to_string() const noexcept override;
     void destroy() noexcept override;
+    bool resolve_names(SymbolTable& table) noexcept override;
 
 private:
     Note* note;
 };
 
-class DurationExpression : public Expression
-{
+class DurationExpression : public Expression{
 public:
     DurationExpression(DurationType type) noexcept;
 
@@ -34,6 +32,7 @@ public:
     DataType get_expression_type() const noexcept override;
     std::string to_string() const noexcept override;
     void destroy() noexcept override;
+    bool resolve_names(SymbolTable& table) noexcept override;
 
 private:
     Duration* duration;

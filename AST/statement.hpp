@@ -4,13 +4,11 @@
 #include "expression.hpp"
 #include <string>
 
-class Statement : public ASTNodeInterface
-{
+class Statement : public ASTNodeInterface{
     // Clase base para los statements
 };
 
-class NoteStatement : public Statement
-{
+class NoteStatement : public Statement{
 public:
     NoteStatement(NoteExpression* note, DurationExpression* duration) noexcept;
 
@@ -18,6 +16,7 @@ public:
     DurationExpression* get_duration() const noexcept;
     std::string to_string() const noexcept override;
     void destroy() noexcept override;
+    bool resolve_names(SymbolTable& table) noexcept override;
 
 private:
     NoteExpression* note;

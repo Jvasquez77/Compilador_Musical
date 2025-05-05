@@ -26,7 +26,7 @@ void Duration::destroy() noexcept {
     
 }
 
-// implementacion de la clave
+// implementacion de la clave (tonalidad)
 Key::Key(const std::string& root_note, KeyMode mode) noexcept
     : root_note{root_note}, mode{mode} {}
 

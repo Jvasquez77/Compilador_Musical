@@ -1,4 +1,6 @@
 #include "statement.hpp"
+#include "../Semantic_Analysis/symbol_table.hpp"
+#include <iostream>
 
 // Implementacion de NoteStatement 
 NoteStatement::NoteStatement(NoteExpression* note, DurationExpression* duration) noexcept
@@ -26,4 +28,39 @@ void NoteStatement::destroy() noexcept {
         duration->destroy();
         delete duration;
     }
+}
+
+// Implementación del método resolve_names para NoteStatement
+bool NoteStatement::resolve_names(SymbolTable& table) noexcept{
+    // Verificar que existan declaraciones necesarias antes de usar notas
+    if (!table.contains("__tempo__"))
+    {
+        std::cerr << "Error: Es necesario declarar el tempo antes de usar notas.\n";
+        return false;
+    }
+    
+    if (!table.contains("__time_signature__"))
+    {
+        std::cerr << "Error: Es necesario declarar el compás antes de usar notas.\n";
+        return false;
+    }
+    
+    if (!table.contains("__key__"))
+    {
+        std::cerr << "Error: Es necesario declarar la tonalidad antes de usar notas.\n";
+        return false;
+    }
+    
+    // Validar la nota y la duración 
+    if (!this->note->resolve_names(table))
+    {
+        return false;
+    }
+    
+    if (!this->duration->resolve_names(table))
+    {
+        return false;
+    }
+    
+    return true;
 } 

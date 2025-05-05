@@ -3,15 +3,15 @@
 #include "ast_node_interface.hpp"
 #include "datatype.hpp"
 #include <string>
+#include <vector>
+#include <iostream>
 
-class Declaration : public ASTNodeInterface
-{
+class Declaration : public ASTNodeInterface{
 public:
     virtual DataType get_declaration_type() const noexcept = 0;
 };
 //declaracion de tempo
-class TempoDeclaration : public Declaration
-{
+class TempoDeclaration : public Declaration{
 public:
     TempoDeclaration(int tempo_value) noexcept;
 
@@ -19,13 +19,13 @@ public:
     DataType get_declaration_type() const noexcept override;
     std::string to_string() const noexcept override;
     void destroy() noexcept override;
+    bool resolve_names(SymbolTable& table) noexcept override;
 
 private:
     Tempo* tempo;
 };
 //declaracion de compas
-class TimeSignatureDeclaration : public Declaration
-{
+class TimeSignatureDeclaration : public Declaration{
 public:
     TimeSignatureDeclaration(int numerator, int denominator) noexcept;
 
@@ -34,13 +34,13 @@ public:
     DataType get_declaration_type() const noexcept override;
     std::string to_string() const noexcept override;
     void destroy() noexcept override;
+    bool resolve_names(SymbolTable& table) noexcept override;
 
 private:
     TimeSignature* time_signature;
 };
 //declaracion de clave (tonalidad)
-class KeyDeclaration : public Declaration
-{
+class KeyDeclaration : public Declaration{
 public:
     KeyDeclaration(const std::string& root_note, KeyMode mode) noexcept;
 
@@ -49,7 +49,35 @@ public:
     DataType get_declaration_type() const noexcept override;
     std::string to_string() const noexcept override;
     void destroy() noexcept override;
+    bool resolve_names(SymbolTable& table) noexcept override;
 
 private:
     Key* key;
+};
+
+// Forward declaration de Statement
+class Statement;
+
+// Clase que representa el nodo raíz del AST
+class MusicProgram : public ASTNodeInterface{
+public:
+    MusicProgram() noexcept;
+    ~MusicProgram() noexcept;
+
+    // Añadir declaraciones y statements al programa
+    void add_declaration(Declaration* declaration) noexcept;
+    void add_statement(Statement* statement) noexcept;
+
+    // Acceso a las declaraciones y statements
+    const std::vector<Declaration*>& get_declarations() const noexcept;
+    const std::vector<Statement*>& get_statements() const noexcept;
+
+    // Métodos de la interfaz ASTNodeInterface
+    std::string to_string() const noexcept override;
+    void destroy() noexcept override;
+    bool resolve_names(SymbolTable& table) noexcept override;
+
+private:
+    std::vector<Declaration*> declarations;
+    std::vector<Statement*> statements;
 }; 
