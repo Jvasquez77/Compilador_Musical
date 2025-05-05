@@ -1,4 +1,5 @@
 #include "datatype.hpp"
+#include "../Semantic_Analysis/symbol_table.hpp"
 
 // implementacion de duracion
 Duration::Duration(DurationType type) noexcept
@@ -26,6 +27,10 @@ void Duration::destroy() noexcept {
     
 }
 
+bool Duration::resolve_names(SymbolTable& /*table*/) noexcept {
+    return true; // Los tipos de datos no necesitan resolver nombres
+}
+
 // implementacion de la clave (tonalidad)
 Key::Key(const std::string& root_note, KeyMode mode) noexcept
     : root_note{root_note}, mode{mode} {}
@@ -43,12 +48,16 @@ DataType Key::get_type() const noexcept {
 }
 
 std::string Key::to_string() const noexcept {
-    std::string mode_str = (mode == KeyMode::MAJOR) ? "M" : "m";
+    std::string mode_str = (mode == KeyMode::MAYOR) ? "M" : "m";
     return root_note + " " + mode_str;
 }
 
 void Key::destroy() noexcept {
     
+}
+
+bool Key::resolve_names(SymbolTable& /*table*/) noexcept {
+    return true; // Los tipos de datos no necesitan resolver nombres
 }
 
 // implementacion de la nota
@@ -75,6 +84,10 @@ void Note::destroy() noexcept {
     
 }
 
+bool Note::resolve_names(SymbolTable& /*table*/) noexcept {
+    return true; // Los tipos de datos no necesitan resolver nombres
+}
+
 // implementacion del tempo
 Tempo::Tempo(int bpm) noexcept
     : bpm{bpm} {}
@@ -93,6 +106,10 @@ std::string Tempo::to_string() const noexcept {
 
 void Tempo::destroy() noexcept {
     
+}
+
+bool Tempo::resolve_names(SymbolTable& /*table*/) noexcept {
+    return true; // Los tipos de datos no necesitan resolver nombres
 }
 
 // implementacion del compás
@@ -117,4 +134,8 @@ std::string TimeSignature::to_string() const noexcept {
 
 void TimeSignature::destroy() noexcept {
     
+}
+
+bool TimeSignature::resolve_names(SymbolTable& /*table*/) noexcept {
+    return true; // Los tipos de datos no necesitan resolver nombres
 } 

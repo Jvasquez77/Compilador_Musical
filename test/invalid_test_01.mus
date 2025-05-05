@@ -5,7 +5,7 @@ Tonalidad Do M
 // Notas con errores de sintaxis
 Do4 Negra
 Re# Corchea  // Falta el número de octava
-Mi4 Blancaa  // "Blancaa" no es una duración válida
+Mi4 Blancaa*  // "Blancaa" no es una duración válida
 Fa4          // Falta la duración
 Sol##4 Negra // Doble sostenido no soportado
 La4 Negra Corchea // Demasiados tokens 

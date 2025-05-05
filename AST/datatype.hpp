@@ -1,9 +1,6 @@
 #pragma once
-
+#include "ast_node_interface.hpp"
 #include <string>
-
-// Forward declaration
-class ASTNodeInterface;
 
 enum class DataType {
     NOTE,          // Representa la nota musical (Do, Re, Mi, etc.)
@@ -13,13 +10,10 @@ enum class DataType {
     KEY             // Representa la tonalidad de la pieza musical (Do mayor, La menor, etc.)
 };
 
-class Datatype
-{
-public:
+class Datatype : public ASTNodeInterface{
+public: 
     virtual ~Datatype() noexcept = default;
     virtual DataType get_type() const noexcept = 0;
-    virtual std::string to_string() const noexcept = 0;
-    virtual void destroy() noexcept = 0;
 };
 
 enum class DurationType {
@@ -38,14 +32,14 @@ public:
     DataType get_type() const noexcept override;
     std::string to_string() const noexcept override;
     void destroy() noexcept override;
+    bool resolve_names(SymbolTable& table) noexcept override;
 
 private:
     DurationType duration_type;
 };
 
 enum class KeyMode {
-    MAJOR,  // Mayor
-    MINOR   // Menor
+    MAYOR, MENOR   
 };
 
 class Key : public Datatype
@@ -58,6 +52,7 @@ public:
     DataType get_type() const noexcept override;
     std::string to_string() const noexcept override;
     void destroy() noexcept override;
+    bool resolve_names(SymbolTable& table) noexcept override;
 
 private:
     std::string root_note;
@@ -74,6 +69,7 @@ public:
     DataType get_type() const noexcept override;
     std::string to_string() const noexcept override;
     void destroy() noexcept override;
+    bool resolve_names(SymbolTable& table) noexcept override;
 
 private:
     std::string note_name;  // Alteraciones (e.g., "Do#", "Sib")
@@ -89,6 +85,7 @@ public:
     DataType get_type() const noexcept override;
     std::string to_string() const noexcept override;
     void destroy() noexcept override;
+    bool resolve_names(SymbolTable& table) noexcept override;
 
 private:
     int bpm;  
@@ -104,6 +101,7 @@ public:
     DataType get_type() const noexcept override;
     std::string to_string() const noexcept override;
     void destroy() noexcept override;
+    bool resolve_names(SymbolTable& table) noexcept override;
 
 private:
     int numerator;    // Número de pulsos por compás

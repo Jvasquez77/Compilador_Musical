@@ -150,7 +150,7 @@ int main() {
     // Agregar las declaraciones iniciales
     program.add_declaration(new TempoDeclaration(60));
     program.add_declaration(new TimeSignatureDeclaration(7, 8));
-    program.add_declaration(new KeyDeclaration("Si", KeyMode::MAJOR));
+    program.add_declaration(new KeyDeclaration("Si", KeyMode::MAYOR));
     
     // Primer patrón rítmico (2+2+3)
     program.add_statement(new NoteStatement(
