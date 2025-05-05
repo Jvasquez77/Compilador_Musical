@@ -2,79 +2,227 @@
 
 ## Introducción
 
-Este documento describe la implementación del analizador sintáctico (parser) y el modelo de expresiones para un compilador de lenguaje musical. El sistema permite procesar archivos de partituras musicales con la extensión `.mus` y convertirlos en una representación de objetos en memoria.
+Este documento describe la implementación del analizador sintáctico (parser) y el modelo de expresiones para el compilador de lenguaje musical. El sistema permite procesar archivos de partituras musicales con la extensión `.mus` y convertirlos en una representación de objetos en memoria que posteriormente se pueden analizar o transformar.
 
 ## Estructura del Sistema
 
 El sistema está compuesto por tres componentes principales:
 
-1 **Scanner** (en `scanner.flex`): escanea y tokeniza el contenido del lenguaje musical.
+1. **Scanner** (en `scanner.flex`): Escanea y tokeniza el contenido del archivo de música utilizando Flex.
 2. **Parser** (en `parser.bison`): Define la gramática del lenguaje musical utilizando Bison.
 3. **Modelo de Expresiones** (en `expression.hpp` y `expression.cpp`): Define las clases que representan los conceptos musicales.
 
 ## Modelo de Expresiones
 
-El modelo de expresiones abstrae la lógica del parser en clases bien definidas que representan los elementos musicales. Todas las clases heredan de una clase base común `Expression`.
+El modelo de expresiones abstrae la lógica del parser en clases bien definidas que representan los elementos musicales. Todas las clases heredan de la clase base abstracta `Expression`.
 
 ### Clase Base
 
-La clase base `Expression` proporciona una interfaz común para todas las expresiones musicales:
+```cpp
+class Expression {
+public:
+    virtual ~Expression();
+    virtual void destroy() noexcept = 0;
+    virtual std::string to_string() const noexcept = 0;
+    
+    virtual std::string getStringValue() const noexcept;
+    virtual int getIntValue() const noexcept;
+    virtual void addInstruction(Expression* instruction) noexcept;
+};
+```
 
-- `destroy()`: Método para gestionar la liberación de recursos.
-- `eval()`: Método para evaluar la expresión y devolver un valor numérico.
-- `to_string()`: Método para convertir la expresión a una representación textual.
+La clase base `Expression` tiene:
+- Destructor virtual para permitir la destrucción polimórfica.
+- Método abstracto `destroy()` para gestionar la liberación manual de recursos.
+- Método abstracto `to_string()` para convertir la expresión a una representación textual.
+- Métodos virtuales adicionales que pueden ser sobrescritos por clases derivadas para obtener valores específicos.
 
-### Clases Principales
+### Clases de Tipos Básicos
 
-#### Configuration
+#### Number
 
-Representa la configuración musical que aparece al inicio de un archivo `.mus`:
+```cpp
+class Number : public Expression {
+public:
+    Number(int val) noexcept;
+    void destroy() noexcept override;
+    std::string to_string() const noexcept override;
+    int getIntValue() const noexcept override;
+private:
+    int value;
+};
+```
 
-- **Tempo**: Velocidad de la pieza en beats por minuto (BPM).
-- **Compás**: Estructura rítmica de la pieza (por ejemplo, 4/4, 3/4, 7/8).
-- **Tonalidad**: Nota central y modo (mayor o menor).
+Representa un valor numérico entero, usado para tempo, numerador y denominador del compás.
 
-Métodos principales:
-- `setTempo()`, `hasTempo()`: Establecer y verificar el tempo.
-- `setTimeSignature()`, `hasTimeSignature()`: Establecer y verificar el compás.
-- `setKey()`, `hasKey()`: Establecer y verificar la tonalidad.
-- `isComplete()`: Verifica si la configuración tiene todos los elementos necesarios.
+#### StringExpression
 
-#### Note
+```cpp
+class StringExpression : public Expression {
+public:
+    StringExpression(const std::string& val) noexcept;
+    void destroy() noexcept override;
+    std::string to_string() const noexcept override;
+    std::string getStringValue() const noexcept override;
+private:
+    std::string value;
+};
+```
 
-Representa una nota musical individual con sus propiedades:
+Representa un valor de tipo cadena, utilizado para nombres de notas.
 
-- Nombre de la nota (Do, Re, Mi, etc.)
-- Alteración (sostenido #, bemol b, o ninguna)
-- Octava (número entero)
-- Duración (negra, blanca, corchea, etc.)
+### Clases para Elementos Musicales
 
-Proporciona métodos para acceder a estas propiedades y para calcular su valor MIDI equivalente mediante `eval()`.
+#### Tempo
 
-#### MusicProgram
+```cpp
+class Tempo : public Expression {
+public:
+    Tempo(Number* val) noexcept;
+    void destroy() noexcept override;
+    std::string to_string() const noexcept override;
+    int getTempo() const noexcept;
+private:
+    Number* tempo_value;
+};
+```
 
-Es el contenedor principal que representa un programa musical completo:
+Representa el tempo musical en beats por minuto (BPM).
 
-- Contiene una instancia de `Configuration`.
-- Almacena una colección de instancias de `Note`.
-- Gestiona la liberación de memoria de todos sus componentes.
+#### TimeSignature (Compás)
 
-## Relación con el Parser
+```cpp
+class TimeSignature : public Expression {
+public:
+    TimeSignature(Number* numerator, Number* denominator) noexcept;
+    void destroy() noexcept override;
+    std::string to_string() const noexcept override;
+    int getNumerator() const noexcept;
+    int getDenominator() const noexcept;
+private:
+    Number* numerator;
+    Number* denominator;
+};
+```
 
-El parser utiliza estas clases para construir una representación en memoria del programa musical:
+Representa la estructura rítmica del compás, como 4/4, 3/4, etc.
 
-1. Crea una instancia de `Configuration` al inicio del análisis.
-2. Establece los valores de tempo, compás y tonalidad según se encuentran en el código fuente.
-3. A medida que analiza las notas, crea instancias de `Note` con los valores correspondientes.
-4. Finalmente, crea una instancia de `MusicProgram` que contiene la configuración y todas las notas.
+#### Key (Tonalidad)
+
+```cpp
+class Key : public Expression {
+public:
+    enum class KeyType { MAJOR, MINOR };
+    
+    Key(std::string note, KeyType type) noexcept;
+    void destroy() noexcept override;
+    std::string to_string() const noexcept override;
+    std::string getNote() const noexcept;
+    KeyType getType() const noexcept;
+private:
+    std::string note;
+    KeyType key_type;
+};
+```
+
+Representa la tonalidad musical, incluyendo la nota base (Do, Re, etc.) y el modo (Mayor o Menor).
+
+#### Duration (Duración)
+
+```cpp
+enum class Duration {
+    BLANCA,
+    NEGRA,
+    CORCHEA,
+    SEMICORCHEA
+};
+```
+
+Enumeración que define las duraciones posibles de una nota musical.
+
+#### Note (Nota)
+
+```cpp
+class Note : public Expression {
+public:
+    Note(std::string note_name, int octave, Duration duration) noexcept;
+    void destroy() noexcept override;
+    std::string to_string() const noexcept override;
+    std::string getNoteName() const noexcept;
+    int getOctave() const noexcept;
+    Duration getDuration() const noexcept;
+private:
+    std::string note_name;
+    int octave;
+    Duration duration;
+};
+```
+
+Representa una nota musical individual con su nombre, octava y duración.
+
+#### Program (Programa)
+
+```cpp
+class Program : public Expression {
+public:
+    Program() noexcept;
+    ~Program();
+    void destroy() noexcept override;
+    std::string to_string() const noexcept override;
+    void addInstruction(Expression* instruction) noexcept override;
+    const std::vector<Expression*>& getInstructions() const noexcept;
+private:
+    std::vector<Expression*> instructions;
+};
+```
+
+Contenedor principal que representa un programa musical completo, almacenando una secuencia de instrucciones musicales (tempo, compás, tonalidad, notas).
+
+## Componentes del Sistema
+
+### Scanner (scanner.flex)
+
+El scanner utiliza Flex para reconocer los tokens del lenguaje musical:
+
+- **Palabras clave**: `Tonalidad`, `Tempo`, `Compas`
+- **Duraciones de notas**: `Blanca`, `Negra`, `Corchea`, `Semicorchea`
+- **Modos tonales**: `M` (Mayor), `m` (Menor)
+- **Notas musicales**: Tanto en notación latina (`Do`, `Re`, etc.) como en notación inglesa (`C`, `D`, etc.)
+- **Alteraciones**: `#` (sostenido), `b` (bemol)
+- **Notas con octava**: Combinaciones de nota, alteración opcional y número de octava (ej: `Do4`, `Fa#3`)
+- **Números y otros símbolos**: Enteros, barras de división, comentarios (comenzando con `//`)
+
+### Parser (parser.bison)
+
+El parser utiliza Bison para definir la gramática del lenguaje musical:
+
+- **Programa**: Secuencia de instrucciones musicales
+- **Instrucciones**: Tempo, compás, tonalidad y notas
+- **Tempo**: Palabra clave `Tempo` seguida de un número
+- **Compás**: Palabra clave `Compas` seguida de dos números separados por una barra (`/`)
+- **Tonalidad**: Palabra clave `Tonalidad` seguida de una nota base (posiblemente alterada) y un modo (Mayor o Menor)
+- **Nota**: Nota con octava seguida de una duración
+
+El parser también incluye funciones auxiliares para extraer la octava y el nombre de la nota de los tokens reconocidos.
+
+### Programa Principal (main.cpp)
+
+El programa principal:
+
+1. Verifica que se proporcione un archivo con extensión `.mus` como argumento
+2. Abre el archivo y lo prepara para el análisis
+3. Inicia el parser para analizar el contenido
+4. Si el análisis tiene éxito, muestra la representación textual del programa musical
+5. Gestiona la limpieza de recursos y el manejo de errores
 
 ## Gestión de Memoria
 
 El sistema implementa un esquema de gestión de memoria manual mediante los métodos `destroy()`:
 
-- Las clases sin recursos complejos (`Configuration`, `Note`) tienen implementaciones simples de `destroy()`.
-- `MusicProgram` implementa `destroy()` para liberar tanto su configuración como todas sus notas.
-- El destructor de `MusicProgram` llama a `destroy()` para garantizar la liberación de recursos.
+- Cada clase es responsable de liberar sus propios recursos en su método `destroy()`
+- La clase `Program` se encarga de liberar todas las instrucciones que contiene
+- El destructor de `Program` llama a `destroy()` para garantizar la liberación adecuada de recursos
+- Las instancias de expresiones se crean dinámicamente con `new` y se liberan mediante `delete` en sus respectivos métodos `destroy()`
 
 ## Ejemplo de Código Válido
 
@@ -93,3 +241,17 @@ La4 Corchea
 Si4 Corchea
 Do5 Blanca
 ```
+
+## Compilación y Ejecución
+
+El proyecto incluye un Makefile para facilitar la compilación:
+
+```bash
+# Compilar el proyecto
+make
+
+# Ejecutar el parser con un archivo de entrada
+./parser ejemplo.mus
+```
+
+Al ejecutarse correctamente, el programa mostrará la representación textual del programa musical analizado.
