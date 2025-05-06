@@ -42,10 +42,10 @@ std::string DurationExpression::to_string() const noexcept {
 }
 
 void DurationExpression::destroy() noexcept {
-    // No hay memoria que liberar
+ 
 }
 
-// implementacion del metodo resolve_names para NoteExpression
+// implementacion del metodo resolve_names (verificacion semantica) para NoteExpression
 bool NoteExpression::resolve_names(SymbolTable& table) noexcept{
     // Verificar que la nota sea válida
     std::vector<std::string> valid_notes = {"Do", "Re", "Mi", "Fa", "Sol", "La", "Si", 
@@ -82,7 +82,7 @@ bool NoteExpression::resolve_names(SymbolTable& table) noexcept{
     return true;
 }
 
-// implementacion del metodo resolve_names para DurationExpression
+// implementacion del metodo resolve_names (verificacion semantica) para DurationExpression
 bool DurationExpression::resolve_names(SymbolTable& /*table*/) noexcept{
     // Todas las duraciones son válidas porque están definidas como enum
     return true;

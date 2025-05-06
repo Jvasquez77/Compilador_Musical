@@ -1,5 +1,4 @@
 # Makefile para el módulo AST del Compilador Musical
-# Compatible con clang++ -std=c++17
 
 # Definir compilador y banderas
 CXX = clang++ -std=c++17
@@ -16,7 +15,7 @@ all: demo_c_function
 demo_c_function: $(OBJ) demo_c_function.o
 	$(CXX) $(CXXFLAGS) -o $@ $^
 
-# Target para probar el AST (compila y ejecuta)
+# Target para probar el AST
 test: demo_c_function
 	./demo_c_function
 
@@ -42,7 +41,7 @@ statement.o: statement.cpp statement.hpp expression.hpp ast_node_interface.hpp
 demo_c_function.o: demo_c_function.cpp ast_node_interface.hpp declaration.hpp expression.hpp statement.hpp ../Semantic_Analysis/symbol_table.hpp
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
-# Regla genérica para compilar archivos .cpp a .o (para cualquier otro archivo)
+# Regla para compilar archivos .cpp a .o 
 %.o: %.cpp
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 

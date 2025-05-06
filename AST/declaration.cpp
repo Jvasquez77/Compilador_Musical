@@ -98,10 +98,9 @@ std::string KeyDeclaration::to_string() const noexcept {
 }
 
 void KeyDeclaration::destroy() noexcept {
-    // No hay memoria que liberar
 }
 
-// Implementación del método resolve_names para KeyDeclaration
+// Implementación del método resolve_names(verificacion semantica) para KeyDeclaration
 bool KeyDeclaration::resolve_names(SymbolTable& table) noexcept{
     if (table.contains("__key__"))
     {
@@ -139,7 +138,7 @@ bool KeyDeclaration::resolve_names(SymbolTable& table) noexcept{
     return true;
 }
 
-// Implementación de la clase MusicProgram
+// Implementación de la clase MusicProgram configuracion musical
 MusicProgram::MusicProgram() noexcept{
 }
 
@@ -189,7 +188,7 @@ std::string MusicProgram::to_string() const noexcept{
     return result;
 }
 
-void MusicProgram::destroy() noexcept{
+void MusicProgram::destroy() noexcept{ 
     // Destruir todas las declaraciones
     for (auto& decl : this->declarations)
     {

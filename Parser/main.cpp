@@ -3,12 +3,11 @@
 #include <string>
 #include "expression.hpp"
 
-// Declaraciones externas para el parser y scanner
 extern FILE* yyin;
 extern int yyparse();
 extern Expression* parser_result;
 
-// Función para verificar la extensión del archivo
+// verificar la extensión del archivo
 bool tiene_extension_mus(const std::string& nombre_archivo) {
     if (nombre_archivo.size() < 4) return false;
     return nombre_archivo.substr(nombre_archivo.size() - 4) == ".mus";
@@ -56,8 +55,6 @@ int main(int argc, char* argv[]) {
     
     std::cout << "Análisis completado con éxito" << std::endl;
 
-    // No tenemos que hacer nada con parser_result ya que se libera en el destructor del parser
-    // Como medida de seguridad, establecemos el puntero a nullptr, pero no liberamos memoria
     parser_result = nullptr;
 
     return 0;

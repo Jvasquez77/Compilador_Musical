@@ -216,13 +216,7 @@ El programa principal:
 5. Gestiona la limpieza de recursos y el manejo de errores
 
 ## Gestión de Memoria
-
-El sistema implementa un esquema de gestión de memoria manual mediante los métodos `destroy()`:
-
-- Cada clase es responsable de liberar sus propios recursos en su método `destroy()`
-- La clase `Program` se encarga de liberar todas las instrucciones que contiene
-- El destructor de `Program` llama a `destroy()` para garantizar la liberación adecuada de recursos
-- Las instancias de expresiones se crean dinámicamente con `new` y se liberan mediante `delete` en sus respectivos métodos `destroy()`
+mediante el metodo `destroy()` cada clase libera sus propios recuros, por ello las expresiones se crean dinamicamente con `new` y se liberan mediante `delete` en sus respectivos métodos `destroy()`
 
 ## Ejemplo de Código Válido
 

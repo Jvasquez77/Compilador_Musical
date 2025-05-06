@@ -3,7 +3,6 @@
 #include <string>
 #include <vector>
 
-// Declaración adelantada para evitar dependencias circulares
 class Expression;
 
 // Clase base para todas las expresiones musicales
@@ -59,7 +58,7 @@ private:
     std::string value;
 };
 
-// Clase para manejar el tempo
+// Clase para el tempo
 class Tempo : public Expression {
 public:
     Tempo(Number* val) noexcept;
@@ -71,7 +70,7 @@ private:
     Number* tempo_value;
 };
 
-// Clase para manejar el compás
+// Clase para el compás
 class TimeSignature : public Expression {
 public:
     TimeSignature(Number* numerator, Number* denominator) noexcept;
@@ -85,7 +84,7 @@ private:
     Number* denominator;
 };
 
-// Clase para manejar la tonalidad
+// Clase para la tonalidad
 class Key : public Expression {
 public:
     enum class KeyType { MAJOR, MINOR };

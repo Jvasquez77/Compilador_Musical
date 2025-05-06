@@ -2,7 +2,7 @@
 
 ## Resumen
 
-El análisis semántico es una fase crítica en nuestro compilador musical que verifica la validez semántica del código, asegurando que las referencias a símbolos sean válidas y que las declaraciones cumplan con las reglas del lenguaje musical.
+El análisis semántico verifica la validez semántica del código, asegurando que las referencias a símbolos sean válidas y que las declaraciones cumplan con las reglas del lenguaje musical.
 
 Este documento describe la implementación del sistema de análisis semántico, incluyendo:
 - La tabla de símbolos utilizada para el seguimiento de declaraciones
@@ -14,7 +14,7 @@ Este documento describe la implementación del sistema de análisis semántico, 
 
 ### 1. Tabla de Símbolos
 
-Implementamos una tabla de símbolos para realizar el seguimiento de los símbolos declarados en el programa musical. Esta tabla está definida en:
+Se implemento una tabla de símbolos para realizar el seguimiento de los símbolos declarados en el programa musical. Esta tabla está definida en:
 - `/Semantic_Analysis/symbol_table.hpp`
 - `/Semantic_Analysis/symbol_table.cpp`
 
@@ -29,7 +29,7 @@ Cada símbolo en la tabla contiene:
 
 ### 2. Modificación del AST para el Análisis Semántico
 
-#### Método `resolve_names()`
+#### Método `resolve_names()` (verificacion semantica realmente)
 
 La interfaz de todos los nodos AST (`ASTNodeInterface`) incluye un método virtual puro:
 
@@ -135,9 +135,3 @@ cd Semantic_Analysis
 make all
 ./demo_program
 ```
-
-## Conclusión
-
-La implementación del análisis semántico representa un paso fundamental en nuestro compilador musical, permitiendo validar la corrección semántica de los programas antes de proceder a etapas posteriores como la generación de código. 
-
-La arquitectura modular basada en el patrón Visitor (con el método `resolve_names()`) facilita la extensión del sistema para agregar más reglas semánticas en el futuro según sea necesario. 

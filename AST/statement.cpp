@@ -30,7 +30,7 @@ void NoteStatement::destroy() noexcept {
     }
 }
 
-// Implementación del método resolve_names para NoteStatement
+// Implementación del método resolve_names (verificacion semantica) para NoteStatement
 bool NoteStatement::resolve_names(SymbolTable& table) noexcept{
     // Verificar que existan declaraciones necesarias antes de usar notas
     if (!table.contains("__tempo__"))
