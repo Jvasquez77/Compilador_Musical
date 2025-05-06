@@ -4,4 +4,4 @@
 - Lorena Fernandez
 - Julio Vasquez
 
-La documentación necesaria para entender el código se encuentra en la carpeta `docs`. 
+Se invita a ingresar a la carpeta `docs`, donde se encontrara la documentación necesaria para comprender la implementación del proyecto, cada documento explica el funcionamiento de un componente del compilador.
