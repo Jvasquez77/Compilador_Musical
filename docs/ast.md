@@ -18,6 +18,7 @@ public:
     virtual ~ASTNodeInterface() noexcept = default;
     virtual void destroy() noexcept = 0;
     virtual std::string to_string() const noexcept = 0;
+    virtual bool resolve_names(SymbolTable& table) noexcept = 0;
 };
 ```
 
@@ -25,56 +26,19 @@ Esta interfaz proporciona:
 - Un destructor virtual para permitir la destrucción polimórfica
 - Un método `destroy()` para la liberación manual de recursos
 - Un método `to_string()` para la representación textual de cada nodo
+- Un método `resolve_names()` para el análisis semántico
 
 ### Jerarquía de Clases
 
 El AST se organiza en tres categorías principales de nodos:
 
-1. **Tipos de Datos** (`datatype.hpp`)
-2. **Expresiones** (`expression.hpp`)
-3. **Declaraciones** (`declaration.hpp`)
-4. **Sentencias** (`statement.hpp`)
+1. **Expresiones** (`expression.hpp`)
+2. **Declaraciones** (`declaration.hpp`)
+3. **Sentencias** (`statement.hpp`)
 
-## Tipos de Datos
+## Tipos de Datos y Enumeraciones
 
-Los tipos de datos básicos son modelados en `datatype.hpp` mediante la clase base abstracta `Datatype`:
-
-```cpp
-enum class DataType {
-    NOTE,          // Representa la nota musical (Do, Re, Mi, etc.)
-    DURATION,      // Representa la duración de una nota
-    TEMPO,         // Representa la velocidad de ejecución
-    TIME_SIGNATURE,// Representa el compás (4/4, 3/4, etc.)
-    KEY            // Representa la tonalidad musical
-};
-
-class Datatype : public ASTNodeInterface {
-public:
-    virtual DataType get_type() const noexcept = 0;
-};
-```
-
-Se implementan las siguientes clases concretas:
-
-### Note
-
-```cpp
-class Note : public Datatype {
-public:
-    Note(const std::string& note_name, int octave) noexcept;
-    std::string get_note_name() const noexcept;
-    int get_octave() const noexcept;
-    // Métodos heredados...
-private:
-    std::string note_name;
-    int octave;
-};
-```
-
-Representa una nota musical con nombre (Do, Re, Mi, etc.) y octava.
-
-### Duration
-
+### DurationType
 ```cpp
 enum class DurationType {
     SEMICORCHEA,   // Semicorchea
@@ -82,72 +46,19 @@ enum class DurationType {
     NEGRA,         // Negra
     BLANCA         // Blanca
 };
-
-class Duration : public Datatype {
-public:
-    Duration(DurationType type) noexcept;
-    DurationType get_duration_type() const noexcept;
-    // Métodos heredados...
-private:
-    DurationType duration_type;
-};
 ```
 
-Representa la duración de una nota musical.
+Define los tipos de duración posibles para las notas musicales.
 
-### Tempo
-
-```cpp
-class Tempo : public Datatype {
-public:
-    Tempo(int bpm) noexcept;
-    int get_bpm() const noexcept;
-    // Métodos heredados...
-private:
-    int bpm;
-};
-```
-
-Representa la velocidad de ejecución en beats por minuto (BPM).
-
-### TimeSignature
-
-```cpp
-class TimeSignature : public Datatype {
-public:
-    TimeSignature(int numerator, int denominator) noexcept;
-    int get_numerator() const noexcept;
-    int get_denominator() const noexcept;
-    // Métodos heredados...
-private:
-    int numerator;
-    int denominator;
-};
-```
-
-Representa el compás musical como una fracción (numerador/denominador).
-
-### Key
-
+### KeyMode
 ```cpp
 enum class KeyMode {
-    MAJOR,  // Mayor
-    MINOR   // Menor
-};
-
-class Key : public Datatype {
-public:
-    Key(const std::string& root_note, KeyMode mode) noexcept;
-    std::string get_root_note() const noexcept;
-    KeyMode get_mode() const noexcept;
-    // Métodos heredados...
-private:
-    std::string root_note;
-    KeyMode mode;
+    MAYOR,  // Mayor
+    MENOR   // Menor
 };
 ```
 
-Representa la tonalidad musical con una nota raíz y un modo (mayor o menor).
+Define los modos posibles para las tonalidades musicales.
 
 ## Expresiones
 
@@ -155,8 +66,6 @@ Las expresiones musicales se definen en `expression.hpp` mediante la clase base 
 
 ```cpp
 class Expression : public ASTNodeInterface {
-public:
-    virtual DataType get_expression_type() const noexcept = 0;
 };
 ```
 
@@ -172,7 +81,8 @@ public:
     int get_octave() const noexcept;
     // Métodos heredados...
 private:
-    Note* note;
+    std::string note_name;
+    int octave;
 };
 ```
 
@@ -187,7 +97,7 @@ public:
     DurationType get_duration_type() const noexcept;
     // Métodos heredados...
 private:
-    Duration* duration;
+    DurationType duration_type;
 };
 ```
 
@@ -199,8 +109,6 @@ Las declaraciones musicales se definen en `declaration.hpp` mediante la clase ba
 
 ```cpp
 class Declaration : public ASTNodeInterface {
-public:
-    virtual DataType get_declaration_type() const noexcept = 0;
 };
 ```
 
@@ -215,7 +123,7 @@ public:
     int get_tempo_value() const noexcept;
     // Métodos heredados...
 private:
-    Tempo* tempo;
+    int tempo_value;
 };
 ```
 
@@ -231,7 +139,8 @@ public:
     int get_denominator() const noexcept;
     // Métodos heredados...
 private:
-    TimeSignature* time_signature;
+    int numerator;
+    int denominator;
 };
 ```
 
@@ -247,7 +156,8 @@ public:
     KeyMode get_mode() const noexcept;
     // Métodos heredados...
 private:
-    Key* key;
+    std::string root_note;
+    KeyMode mode;
 };
 ```
 
@@ -255,11 +165,10 @@ Representa una declaración de tonalidad.
 
 ## Sentencias
 
-Las sentencias musicales se definen en `statement.hpp` mediante la clase base abstracta `Statement`:
+Las sentencias musicales se definen en `statement.hpp`:
 
 ```cpp
 class Statement : public ASTNodeInterface {
-    // Clase base para los statements
 };
 ```
 
@@ -270,99 +179,77 @@ Se implementan las siguientes clases concretas:
 ```cpp
 class NoteStatement : public Statement {
 public:
-    NoteStatement(NoteExpression* note, DurationExpression* duration) noexcept;
-    NoteExpression* get_note() const noexcept;
-    DurationExpression* get_duration() const noexcept;
+    NoteStatement(Expression* note, Expression* duration) noexcept;
+    Expression* get_note() const noexcept;
+    Expression* get_duration() const noexcept;
     // Métodos heredados...
 private:
-    NoteExpression* note;
-    DurationExpression* duration;
+    Expression* note;
+    Expression* duration;
 };
 ```
 
-Representa una sentencia de nota musical, que combina una nota con una duración.
+Representa una nota musical con su duración.
 
 ## Programa Musical
 
-El AST también proporciona una estructura para representar un programa musical completo, implementada en `demo_c_function.cpp`:
+La clase raíz del AST es `MusicProgram`:
 
 ```cpp
-class Program : public ASTNodeInterface {
+class MusicProgram : public ASTNodeInterface {
 public:
-    Program() noexcept = default;
-    void add_declaration(Declaration* decl) noexcept;
-    void add_statement(Statement* stmt) noexcept;
+    MusicProgram() noexcept;
+    ~MusicProgram() noexcept;
+    
+    void add_declaration(Declaration* declaration) noexcept;
+    void add_statement(Statement* statement) noexcept;
+    
+    const std::vector<Declaration*>& get_declarations() const noexcept;
+    const std::vector<Statement*>& get_statements() const noexcept;
+    
     // Métodos heredados...
 private:
-    std::forward_list<Declaration*> declarations;
-    std::forward_list<Statement*> statements;
+    std::vector<Declaration*> declarations;
+    std::vector<Statement*> statements;
 };
 ```
 
-Esta clase actúa como contenedor de alto nivel para todas las declaraciones y sentencias en un programa musical.
-
-## Gestión de Memoria
-
-El AST implementa un sistema de gestión de memoria manual que sigue estas reglas:
-
-1. Todos los nodos se crean dinámicamente con `new`
-2. Cada nodo es responsable de liberar sus propios recursos en su método `destroy()`
-3. Los nodos compuestos son responsables de llamar a `destroy()` en sus nodos hijos
-4. Los destructores del AST llaman a `destroy()` para garantizar una liberación adecuada de recursos
-
-## Ejemplo de Uso
-
-El archivo `demo_c_function.cpp` proporciona un ejemplo completo de cómo construir y utilizar el AST:
-
-```cpp
-int main() {
-    // Crear un programa musical
-    Program program;
-    
-    // Agregar declaraciones
-    program.add_declaration(new TempoDeclaration(60));
-    program.add_declaration(new TimeSignatureDeclaration(7, 8));
-    program.add_declaration(new KeyDeclaration("Si", KeyMode::MAJOR));
-    
-    // Agregar notas
-    program.add_statement(new NoteStatement(
-        new NoteExpression("Do#", 5),
-        new DurationExpression(DurationType::CORCHEA)
-    ));
-    
-    // Imprimir la representación del AST
-    std::cout << program.to_string() << std::endl;
-    
-    // Liberar recursos
-    program.destroy();
-    
-    return 0;
-}
-```
-
-Este ejemplo crea un programa musical con tempo, compás y tonalidad, seguido de una nota musical, y luego imprime su representación.
-
-## Compilación
-
-El módulo AST incluye un Makefile para facilitar la compilación:
-
-```bash
-# Compilar todo el AST
-make
-
-# Ejecutar el programa de demostración
-make test
-```
-
-Esto compila todos los componentes del AST y ejecuta el programa de demostración, que muestra la representación textual del AST construido.
+Representa un programa musical completo, conteniendo declaraciones y sentencias.
 
 ## Extensibilidad
 
-La arquitectura del AST está diseñada para ser extensible:
+El sistema del AST está diseñado para ser extensible:
 
-1. Nuevos tipos de datos pueden añadirse implementando nuevas subclases de `Datatype`
-2. Nuevas expresiones pueden añadirse implementando nuevas subclases de `Expression`
-3. Nuevas declaraciones pueden añadirse implementando nuevas subclases de `Declaration`
-4. Nuevas sentencias pueden añadirse implementando nuevas subclases de `Statement`
+1. Nuevas expresiones pueden añadirse implementando subclases de `Expression`
+2. Nuevas declaraciones pueden añadirse implementando subclases de `Declaration`
+3. Nuevas sentencias pueden añadirse implementando subclases de `Statement`
 
-Esto permite que el lenguaje musical se extienda con nuevas características sin alterar la estructura fundamental del AST. 
+## Ejemplo de Creación de AST
+
+```cpp
+// Crear un programa musical
+MusicProgram program;
+
+// Declaraciones
+program.add_declaration(new TempoDeclaration(60));
+program.add_declaration(new TimeSignatureDeclaration(4, 4));
+program.add_declaration(new KeyDeclaration("Do", KeyMode::MAYOR));
+
+// Nota musical
+program.add_statement(new NoteStatement(
+    new NoteExpression("Do", 4),
+    new DurationExpression(DurationType::NEGRA)
+));
+```
+
+## Memoria y Destrucción
+
+Cada nodo del AST es responsable de la destrucción recursiva de sus nodos hijos a través del método `destroy()`. Esto asegura que toda la memoria sea liberada correctamente cuando se destruye el nodo raíz.
+
+## Análisis Semántico
+
+El método `resolve_names()` en cada nodo permite realizar la validación semántica utilizando la tabla de símbolos. Este método retorna:
+- `true` si el nodo y todos sus hijos son semánticamente válidos
+- `false` si hay algún error semántico
+
+Para más detalles sobre el análisis semántico, consulte el documento correspondiente. 

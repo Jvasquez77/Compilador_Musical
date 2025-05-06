@@ -5,14 +5,12 @@
 #include <string_view>
 #include <unordered_map>
 #include <vector>
-#include "../AST/datatype.hpp"
 
 // Estructura que representa un símbolo en la tabla
 struct Symbol{
-    DataType type;
     std::string name;
     
-    static std::shared_ptr<Symbol> build(DataType type, std::string_view name) noexcept;
+    static std::shared_ptr<Symbol> build(std::string_view name) noexcept;
 };
 
 // Clase que implementa la tabla de símbolos
@@ -30,7 +28,7 @@ public:
     TableType::size_type scope_level() const noexcept;
 
     // Métodos principales
-    bool insert(const std::string& name, DataType type) noexcept;
+    bool insert(const std::string& name) noexcept;
     bool contains(const std::string& name) noexcept;
     std::shared_ptr<Symbol> lookup(const std::string& name) noexcept;
     std::shared_ptr<Symbol> current_scope_lookup(const std::string& name) noexcept;

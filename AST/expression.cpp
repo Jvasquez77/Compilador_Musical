@@ -5,60 +5,49 @@
 
 // implementacion de NoteExpression 
 NoteExpression::NoteExpression(const std::string& note_name, int octave) noexcept
-    : note{new Note(note_name, octave)} {}
+    : note_name{note_name}, octave{octave} {}
 
 std::string NoteExpression::get_note_name() const noexcept {
-    return note->get_note_name();
+    return note_name;
 }
 
 int NoteExpression::get_octave() const noexcept {
-    return note->get_octave();
-}
-
-DataType NoteExpression::get_expression_type() const noexcept {
-    return DataType::NOTE;
+    return octave;
 }
 
 std::string NoteExpression::to_string() const noexcept {
-    return note->to_string();
+    return note_name + std::to_string(octave);
 }
 
 void NoteExpression::destroy() noexcept {
-    if (note != nullptr) {
-        note->destroy();
-        delete note;
-        note = nullptr;
-    }
+    // No hay memoria que liberar
 }
 
 // implementacion de DurationExpression 
 DurationExpression::DurationExpression(DurationType type) noexcept
-    : duration{new Duration(type)} {}
+    : duration_type{type} {}
 
 DurationType DurationExpression::get_duration_type() const noexcept {
-    return duration->get_duration_type();
-}
-
-DataType DurationExpression::get_expression_type() const noexcept {
-    return DataType::DURATION;
+    return duration_type;
 }
 
 std::string DurationExpression::to_string() const noexcept {
-    return duration->to_string();
+    switch (duration_type) {
+        case DurationType::SEMICORCHEA: return "Semicorchea";
+        case DurationType::CORCHEA: return "Corchea";
+        case DurationType::NEGRA: return "Negra";
+        case DurationType::BLANCA: return "Blanca";
+        default: return "Unknown";
+    }
 }
 
 void DurationExpression::destroy() noexcept {
-    if (duration != nullptr) {
-        duration->destroy();
-        delete duration;
-        duration = nullptr;
-    }
+    // No hay memoria que liberar
 }
 
 // implementacion del metodo resolve_names para NoteExpression
 bool NoteExpression::resolve_names(SymbolTable& table) noexcept{
     // Verificar que la nota sea válida
-    std::string note_name = this->note->get_note_name();
     std::vector<std::string> valid_notes = {"Do", "Re", "Mi", "Fa", "Sol", "La", "Si", 
                                           "Do#", "Re#", "Fa#", "Sol#", "La#", "Si#",
                                           "Dob", "Reb", "Mib", "Solb", "Lab", "Sib",
@@ -84,7 +73,6 @@ bool NoteExpression::resolve_names(SymbolTable& table) noexcept{
     }
     
     // Verificar que la octava esté en un rango válido (1-8)
-    int octave = this->note->get_octave();
     if (octave < 1 || octave > 8)
     {
         std::cerr << "Error: Octava fuera de rango (1-8): " << octave << ".\n";
@@ -93,8 +81,9 @@ bool NoteExpression::resolve_names(SymbolTable& table) noexcept{
     
     return true;
 }
+
 // implementacion del metodo resolve_names para DurationExpression
-bool DurationExpression::resolve_names(SymbolTable& table) noexcept{
+bool DurationExpression::resolve_names(SymbolTable& /*table*/) noexcept{
     // Todas las duraciones son válidas porque están definidas como enum
     return true;
 } 

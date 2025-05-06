@@ -34,7 +34,6 @@
 */
 
 #include "ast_node_interface.hpp"
-#include "datatype.hpp"
 #include "declaration.hpp"
 #include "expression.hpp"
 #include "statement.hpp"

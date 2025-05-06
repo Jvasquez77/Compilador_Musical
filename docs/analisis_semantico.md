@@ -20,25 +20,24 @@ Implementamos una tabla de símbolos para realizar el seguimiento de los símbol
 
 La tabla de símbolos ofrece las siguientes funcionalidades:
 - Soporte para ámbitos anidados (`enter_scope()` y `exit_scope()`)
-- Inserción de símbolos con su tipo (`insert(name, type)`)
+- Inserción de símbolos (`insert(name)`)
 - Búsqueda de símbolos a través de ámbitos (`lookup(name)`)
 - Verificación de existencia de símbolos (`contains(name)`)
 
 Cada símbolo en la tabla contiene:
 - Un nombre (como string)
-- Un tipo de datos (usando `DataType` del AST)
 
 ### 2. Modificación del AST para el Análisis Semántico
 
 #### Método `resolve_names()`
 
-Extendimos la interfaz de todos los nodos AST (`ASTNodeInterface`) con un método virtual puro:
+La interfaz de todos los nodos AST (`ASTNodeInterface`) incluye un método virtual puro:
 
 ```cpp
 virtual bool resolve_names(SymbolTable& table) noexcept = 0;
 ```
 
-Este método fue implementado en cada clase derivada para:
+Este método es implementado en cada clase derivada para:
 1. Verificar la validez semántica del nodo
 2. Registrar los símbolos declarados en la tabla de símbolos
 3. Verificar que las referencias a símbolos sean válidas
@@ -63,7 +62,7 @@ Este método fue implementado en cada clase derivada para:
 
 ##### Nodo Raíz
 
-- **MusicProgram**: Coordina el análisis semántico de todo el programa, llamando a `resolve_names()` en todos los nodos hijos dentro de un nuevo ámbito.
+- **MusicProgram**: Coordina el análisis semántico de todo el programa, llamando a `resolve_names()` en todos los nodos hijos y verificando que existan las declaraciones obligatorias.
 
 ## Reglas Semánticas Implementadas
 
@@ -71,17 +70,16 @@ Este método fue implementado en cada clase derivada para:
    - Tempo, compás y tonalidad solo pueden declararse una vez en el programa.
 
 2. **Validez de los valores**:
-   - Tempo: Debe ser un valor positivo.
+   - Tempo: Debe estar en el rango de Larghissimo a Prestissimo (20-200 BPM).
    - Compás (Time Signature): 
-     - Numerador debe ser positivo.
+     - Numerador debe ser mayor a 1 y menor a 12.
      - Denominador debe ser 2, 4, 8 o 16.
    - Tonalidad (Key): 
      - La nota raíz debe ser válida (Do, Re, Mi, etc., con alteraciones válidas).
 
 3. **Validez de notas**:
    - Las notas deben estar en el conjunto de notas musicales válidas.
-   - La octava debe estar en un rango razonable.
-   - Las alteraciones (sostenidos, bemoles) deben ser coherentes.
+   - La octava debe estar en el rango 1-8.
 
 ## Programa de Demostración
 
@@ -109,7 +107,7 @@ MusicProgram* program = new MusicProgram();
 // Agregar declaraciones
 program->add_declaration(new TempoDeclaration(60));
 program->add_declaration(new TimeSignatureDeclaration(7, 8));
-program->add_declaration(new KeyDeclaration("Si", KeyMode::MAJOR));
+program->add_declaration(new KeyDeclaration("Si", KeyMode::MAYOR));
 
 // Agregar statements (notas)
 program->add_statement(new NoteStatement(

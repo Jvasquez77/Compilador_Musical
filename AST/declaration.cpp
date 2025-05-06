@@ -6,26 +6,18 @@
 
 // TempoDeclaration implementacion
 TempoDeclaration::TempoDeclaration(int tempo_value) noexcept
-    : tempo{new Tempo(tempo_value)} {}
+    : tempo_value{tempo_value} {}
 
 int TempoDeclaration::get_tempo_value() const noexcept {
-    return tempo->get_bpm();
-}
-
-DataType TempoDeclaration::get_declaration_type() const noexcept {
-    return DataType::TEMPO;
+    return tempo_value;
 }
 
 std::string TempoDeclaration::to_string() const noexcept {
-    return "Tempo " + std::to_string(tempo->get_bpm());
+    return "Tempo " + std::to_string(tempo_value);
 }
 
 void TempoDeclaration::destroy() noexcept {
-    if (tempo != nullptr) {
-        tempo->destroy();
-        delete tempo;
-        tempo = nullptr;
-    }
+    // No hay memoria que liberar
 }
 
 // Implementación del método resolve_names para TempoDeclaration
@@ -36,42 +28,33 @@ bool TempoDeclaration::resolve_names(SymbolTable& table) noexcept{
         return false;
     }
     
-    int bpm = this->tempo->get_bpm();
-    if (bpm < 20 || bpm > 200){
+    if (tempo_value < 20 || tempo_value > 200){
         std::cerr << "Error: El tempo debe estar en el rango de Larghissimo a Prestissimo.\n";
         return false;
     }
     
-    table.insert("__tempo__", DataType::TEMPO);
+    table.insert("__tempo__");
     return true;
 }
 
 // implementacion de la declaracion de compas
 TimeSignatureDeclaration::TimeSignatureDeclaration(int numerator, int denominator) noexcept
-    : time_signature{new TimeSignature(numerator, denominator)} {}
+    : numerator{numerator}, denominator{denominator} {}
 
 int TimeSignatureDeclaration::get_numerator() const noexcept {
-    return time_signature->get_numerator();
+    return numerator;
 }
 
 int TimeSignatureDeclaration::get_denominator() const noexcept {
-    return time_signature->get_denominator();
-}
-
-DataType TimeSignatureDeclaration::get_declaration_type() const noexcept {
-    return DataType::TIME_SIGNATURE;
+    return denominator;
 }
 
 std::string TimeSignatureDeclaration::to_string() const noexcept {
-    return "Compas " + time_signature->to_string();
+    return "Compas " + std::to_string(numerator) + "/" + std::to_string(denominator);
 }
 
 void TimeSignatureDeclaration::destroy() noexcept {
-    if (time_signature != nullptr) {
-        time_signature->destroy();
-        delete time_signature;
-        time_signature = nullptr;
-    }
+    // No hay memoria que liberar
 }
 
 // Implementación del método resolve_names para TimeSignatureDeclaration
@@ -81,9 +64,6 @@ bool TimeSignatureDeclaration::resolve_names(SymbolTable& table) noexcept{
         std::cerr << "Error: Compás declarado más de una vez.\n";
         return false;
     }
-    
-    int numerator = this->time_signature->get_numerator();
-    int denominator = this->time_signature->get_denominator();
     
     if (numerator <= 1 || numerator > 12){
         std::cerr << "Error: El numerador del compás debe ser mayor a 1 y menor a 12.\n";
@@ -96,36 +76,29 @@ bool TimeSignatureDeclaration::resolve_names(SymbolTable& table) noexcept{
         return false;
     }
     
-    table.insert("__time_signature__", DataType::TIME_SIGNATURE);
+    table.insert("__time_signature__");
     return true;
 }
 
 // implementacion de la declaracion de clave (tonalidad)
 KeyDeclaration::KeyDeclaration(const std::string& root_note, KeyMode mode) noexcept
-    : key{new Key(root_note, mode)} {}
+    : root_note{root_note}, mode{mode} {}
 
 std::string KeyDeclaration::get_root_note() const noexcept {
-    return key->get_root_note();
+    return root_note;
 }
 
 KeyMode KeyDeclaration::get_mode() const noexcept {
-    return key->get_mode();
-}
-
-DataType KeyDeclaration::get_declaration_type() const noexcept {
-    return DataType::KEY;
+    return mode;
 }
 
 std::string KeyDeclaration::to_string() const noexcept {
-    return "Tonalidad " + key->to_string();
+    std::string mode_str = (mode == KeyMode::MAYOR) ? "M" : "m";
+    return "Tonalidad " + root_note + " " + mode_str;
 }
 
 void KeyDeclaration::destroy() noexcept {
-    if (key != nullptr) {
-        key->destroy();
-        delete key;
-        key = nullptr;
-    }
+    // No hay memoria que liberar
 }
 
 // Implementación del método resolve_names para KeyDeclaration
@@ -137,7 +110,6 @@ bool KeyDeclaration::resolve_names(SymbolTable& table) noexcept{
     }
     
     // Verificar que la nota raíz sea válida
-    std::string root = this->key->get_root_note();
     // Lista de notas musicales válidas
     std::vector<std::string> valid_notes = {"Do", "Re", "Mi", "Fa", "Sol", "La", "Si", 
                                           "Do#", "Re#", "Fa#", "Sol#", "La#", "Si#",
@@ -150,7 +122,7 @@ bool KeyDeclaration::resolve_names(SymbolTable& table) noexcept{
     bool valid_root = false;
     for (const auto& note : valid_notes)
     {
-        if (root == note)
+        if (root_note == note)
         {
             valid_root = true;
             break;
@@ -159,17 +131,16 @@ bool KeyDeclaration::resolve_names(SymbolTable& table) noexcept{
     
     if (!valid_root)
     {
-        std::cerr << "Error: Nota raíz inválida: " << root << ".\n";
+        std::cerr << "Error: Nota raíz inválida: " << root_note << ".\n";
         return false;
     }
     
-    table.insert("__key__", DataType::KEY);
+    table.insert("__key__");
     return true;
 }
 
 // Implementación de la clase MusicProgram
 MusicProgram::MusicProgram() noexcept{
-    // No hay inicialización especial necesaria
 }
 
 MusicProgram::~MusicProgram() noexcept{
@@ -199,71 +170,86 @@ const std::vector<Statement*>& MusicProgram::get_statements() const noexcept{
 }
 
 std::string MusicProgram::to_string() const noexcept{
-    std::string result = "Programa Musical:\n";
-    
-    // Agregar todas las declaraciones
+    std::string result = "Programa musical:\n";
+
+    // Imprimir todas las declaraciones
     result += "Declaraciones:\n";
     for (const auto& decl : this->declarations)
     {
         result += "  " + decl->to_string() + "\n";
     }
-    
-    // Agregar todos los statements
-    result += "Notas:\n";
+
+    // Imprimir todos los statements
+    result += "Sentencias:\n";
     for (const auto& stmt : this->statements)
     {
         result += "  " + stmt->to_string() + "\n";
     }
-    
+
     return result;
 }
 
 void MusicProgram::destroy() noexcept{
     // Destruir todas las declaraciones
-    for (auto decl : this->declarations)
+    for (auto& decl : this->declarations)
     {
         if (decl != nullptr)
         {
             decl->destroy();
+            delete decl;
         }
     }
     this->declarations.clear();
-    
+
     // Destruir todos los statements
-    for (auto stmt : this->statements)
+    for (auto& stmt : this->statements)
     {
         if (stmt != nullptr)
         {
             stmt->destroy();
+            delete stmt;
         }
     }
     this->statements.clear();
-    
-    delete this;
 }
 
 bool MusicProgram::resolve_names(SymbolTable& table) noexcept{
-    // Resolver nombres en todas las declaraciones
-    for (auto decl : this->declarations)
+    // Primero procesar todas las declaraciones
+    for (const auto& decl : this->declarations)
     {
         if (!decl->resolve_names(table))
         {
-            std::cerr << "Error en la resolución de nombres para la declaración: " 
-                     << decl->to_string() << "\n";
             return false;
         }
     }
-    
-    // resolver nombres en todos los statements
-    for (auto stmt : this->statements)
+
+    // Luego procesar todos los statements
+    for (const auto& stmt : this->statements)
     {
         if (!stmt->resolve_names(table))
         {
-            std::cerr << "Error en la resolución de nombres para el statement: " 
-                     << stmt->to_string() << "\n";
             return false;
         }
     }
-    
+
+    // Verificar que las declaraciones obligatorias existan
+    if (!table.contains("__tempo__"))
+    {
+        std::cerr << "Error: Falta declaración de tempo.\n";
+        return false;
+    }
+
+    if (!table.contains("__time_signature__"))
+    {
+        std::cerr << "Error: Falta declaración de compás.\n";
+        return false;
+    }
+
+    if (!table.contains("__key__"))
+    {
+        std::cerr << "Error: Falta declaración de tonalidad.\n";
+        return false;
+    }
+
     return true;
 } 

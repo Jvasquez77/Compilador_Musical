@@ -8,7 +8,6 @@
 class Declaration;
 class Expression;
 class Statement;
-class Datatype;
 class SymbolTable;
 
 // Definimos la interfaz base para todos los nodos del AST

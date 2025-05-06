@@ -32,7 +32,6 @@
 */
 
 #include "../AST/ast_node_interface.hpp"
-#include "../AST/datatype.hpp"
 #include "../AST/declaration.hpp"
 #include "../AST/expression.hpp"
 #include "../AST/statement.hpp"
@@ -164,6 +163,10 @@ int main() {
     // Imprimir el AST
     std::cout << "\n--- AST del Programa Musical ---" << std::endl;
     std::cout << program->to_string() << std::endl;
+    
+    // Liberar memoria
+    program->destroy();
+    delete program;
     
     return 0;
 } 

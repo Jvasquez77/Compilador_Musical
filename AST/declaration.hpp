@@ -1,58 +1,62 @@
 #pragma once
 
 #include "ast_node_interface.hpp"
-#include "datatype.hpp"
 #include <string>
 #include <vector>
 #include <iostream>
 
-class Declaration : public ASTNodeInterface{
-public:
-    virtual DataType get_declaration_type() const noexcept = 0;
+// Enumeración para el modo de la tonalidad
+enum class KeyMode {
+    MAYOR, MENOR   
 };
-//declaracion de tempo
+
+class Declaration : public ASTNodeInterface{
+};
+
+// Declaración de tempo
 class TempoDeclaration : public Declaration{
 public:
     TempoDeclaration(int tempo_value) noexcept;
 
     int get_tempo_value() const noexcept;
-    DataType get_declaration_type() const noexcept override;
     std::string to_string() const noexcept override;
     void destroy() noexcept override;
     bool resolve_names(SymbolTable& table) noexcept override;
 
 private:
-    Tempo* tempo;
+    int tempo_value;
 };
-//declaracion de compas
+
+// Declaración de compás
 class TimeSignatureDeclaration : public Declaration{
 public:
     TimeSignatureDeclaration(int numerator, int denominator) noexcept;
 
     int get_numerator() const noexcept;
     int get_denominator() const noexcept;
-    DataType get_declaration_type() const noexcept override;
     std::string to_string() const noexcept override;
     void destroy() noexcept override;
     bool resolve_names(SymbolTable& table) noexcept override;
 
 private:
-    TimeSignature* time_signature;
+    int numerator;
+    int denominator;
 };
-//declaracion de clave (tonalidad)
+
+// Declaración de clave (tonalidad)
 class KeyDeclaration : public Declaration{
 public:
     KeyDeclaration(const std::string& root_note, KeyMode mode) noexcept;
 
     std::string get_root_note() const noexcept;
     KeyMode get_mode() const noexcept;
-    DataType get_declaration_type() const noexcept override;
     std::string to_string() const noexcept override;
     void destroy() noexcept override;
     bool resolve_names(SymbolTable& table) noexcept override;
 
 private:
-    Key* key;
+    std::string root_note;
+    KeyMode mode;
 };
 
 // Forward declaration de Statement

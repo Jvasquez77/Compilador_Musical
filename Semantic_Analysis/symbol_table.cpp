@@ -1,8 +1,7 @@
 #include "symbol_table.hpp"
 
-std::shared_ptr<Symbol> Symbol::build(DataType type, std::string_view name) noexcept{
+std::shared_ptr<Symbol> Symbol::build(std::string_view name) noexcept{
     auto symbol = std::make_shared<Symbol>();
-    symbol->type = type;
     symbol->name = name;
     return symbol;
 }
@@ -36,13 +35,13 @@ SymbolTable::TableType::size_type SymbolTable::scope_level() const noexcept{
     return this->scopes.size();
 }
 
-bool SymbolTable::insert(const std::string& name, DataType type) noexcept{
+bool SymbolTable::insert(const std::string& name) noexcept{
     if (this->scopes.empty())
     {
         return false;
     }
 
-    auto symbol = Symbol::build(type, name);
+    auto symbol = Symbol::build(name);
     TableType& current_scope = this->scopes.back();
 
     if (SymbolTable::find_in_scope(name, current_scope) != nullptr)

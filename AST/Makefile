@@ -7,7 +7,7 @@ CC = clang
 CXXFLAGS = -Wall -Wextra -pedantic -I.
 
 # Definir archivos objeto necesarios
-OBJ = ast_node_interface.o datatype.o declaration.o expression.o statement.o ../Semantic_Analysis/symbol_table.o
+OBJ = ast_node_interface.o declaration.o expression.o statement.o ../Semantic_Analysis/symbol_table.o
 
 # Target por defecto
 all: demo_c_function
@@ -27,13 +27,10 @@ run: test
 ast_node_interface.o: ast_node_interface.cpp ast_node_interface.hpp
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
-datatype.o: datatype.cpp datatype.hpp ast_node_interface.hpp
+declaration.o: declaration.cpp declaration.hpp ast_node_interface.hpp
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
-declaration.o: declaration.cpp declaration.hpp datatype.hpp ast_node_interface.hpp
-	$(CXX) $(CXXFLAGS) -c -o $@ $<
-
-expression.o: expression.cpp expression.hpp datatype.hpp ast_node_interface.hpp
+expression.o: expression.cpp expression.hpp ast_node_interface.hpp
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
 statement.o: statement.cpp statement.hpp expression.hpp ast_node_interface.hpp
@@ -42,7 +39,7 @@ statement.o: statement.cpp statement.hpp expression.hpp ast_node_interface.hpp
 ../Semantic_Analysis/symbol_table.o: ../Semantic_Analysis/symbol_table.cpp ../Semantic_Analysis/symbol_table.hpp
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
-demo_c_function.o: demo_c_function.cpp ast_node_interface.hpp datatype.hpp declaration.hpp expression.hpp statement.hpp ../Semantic_Analysis/symbol_table.hpp
+demo_c_function.o: demo_c_function.cpp ast_node_interface.hpp declaration.hpp expression.hpp statement.hpp ../Semantic_Analysis/symbol_table.hpp
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
 # Regla genérica para compilar archivos .cpp a .o (para cualquier otro archivo)

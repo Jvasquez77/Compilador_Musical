@@ -7,7 +7,7 @@ CXXFLAGS = -Wall -Wextra -pedantic -I. -I..
 
 # Definir archivos objeto necesarios
 AST_DIR = ../AST
-OBJ = $(AST_DIR)/ast_node_interface.o $(AST_DIR)/datatype.o $(AST_DIR)/declaration.o $(AST_DIR)/expression.o $(AST_DIR)/statement.o symbol_table.o
+OBJ = $(AST_DIR)/ast_node_interface.o $(AST_DIR)/declaration.o $(AST_DIR)/expression.o $(AST_DIR)/statement.o symbol_table.o
 
 # Target por defecto
 all: demo_program
@@ -17,7 +17,7 @@ demo_program: $(OBJ) demo_program.o
 	$(CXX) $(CXXFLAGS) -o $@ $^
 
 # Reglas de compilación para cada archivo objeto
-demo_program.o: demo_program.cpp symbol_table.hpp $(AST_DIR)/ast_node_interface.hpp $(AST_DIR)/datatype.hpp $(AST_DIR)/declaration.hpp $(AST_DIR)/expression.hpp $(AST_DIR)/statement.hpp
+demo_program.o: demo_program.cpp symbol_table.hpp $(AST_DIR)/ast_node_interface.hpp $(AST_DIR)/declaration.hpp $(AST_DIR)/expression.hpp $(AST_DIR)/statement.hpp
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
 symbol_table.o: symbol_table.cpp symbol_table.hpp
