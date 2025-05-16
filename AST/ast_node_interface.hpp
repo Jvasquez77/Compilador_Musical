@@ -3,6 +3,7 @@
 #include <string>
 #include <string_view>
 #include <forward_list>
+#include <ostream>
 
 
 class Declaration;
@@ -23,6 +24,10 @@ public:
 
     // Método para verificacion en el análisis semántico
     virtual bool resolve_names(SymbolTable& table) noexcept = 0;
+    
+    // Método para generar notación ABC
+    virtual void to_abc(std::ostream& out,
+                        double &beatCounter) const noexcept = 0;
 };
 // Alias útil para representar un cuerpo de instrucciones
 using ProgramBody = std::forward_list<Statement*>;

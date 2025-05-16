@@ -22,6 +22,7 @@ public:
     std::string to_string() const noexcept override;
     void destroy() noexcept override;
     bool resolve_names(SymbolTable& table) noexcept override;
+    void to_abc(std::ostream& out, double &beatCounter) const noexcept override;
 
 private:
     int tempo_value;
@@ -37,6 +38,7 @@ public:
     std::string to_string() const noexcept override;
     void destroy() noexcept override;
     bool resolve_names(SymbolTable& table) noexcept override;
+    void to_abc(std::ostream& out, double &beatCounter) const noexcept override;
 
 private:
     int numerator;
@@ -53,6 +55,7 @@ public:
     std::string to_string() const noexcept override;
     void destroy() noexcept override;
     bool resolve_names(SymbolTable& table) noexcept override;
+    void to_abc(std::ostream& out, double &beatCounter) const noexcept override;
 
 private:
     std::string root_note;
@@ -80,6 +83,7 @@ public:
     std::string to_string() const noexcept override;
     void destroy() noexcept override;
     bool resolve_names(SymbolTable& table) noexcept override;
+    void to_abc(std::ostream& out, double &beatCounter) const noexcept override;
 
 private:
     std::vector<Declaration*> declarations;

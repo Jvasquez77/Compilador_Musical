@@ -3,6 +3,7 @@
 #include "../Semantic_Analysis/symbol_table.hpp"
 #include <vector>
 #include <iostream>
+#include <cmath>
 
 // TempoDeclaration implementacion
 TempoDeclaration::TempoDeclaration(int tempo_value) noexcept
@@ -35,6 +36,11 @@ bool TempoDeclaration::resolve_names(SymbolTable& table) noexcept{
     
     table.insert("__tempo__");
     return true;
+}
+
+// Implementación de to_abc para TempoDeclaration
+void TempoDeclaration::to_abc(std::ostream& out, double& /*beatCounter*/) const noexcept {
+    out << "Q:1/4=" << tempo_value << "\n";
 }
 
 // implementacion de la declaracion de compas
@@ -78,6 +84,12 @@ bool TimeSignatureDeclaration::resolve_names(SymbolTable& table) noexcept{
     
     table.insert("__time_signature__");
     return true;
+}
+
+// Implementación de to_abc para TimeSignatureDeclaration
+void TimeSignatureDeclaration::to_abc(std::ostream& out, double& /*beatCounter*/) const noexcept {
+    out << "M:" << numerator << "/" << denominator << "\n";
+    out << "L:1/8\n"; // Establecer la unidad básica como corchea
 }
 
 // implementacion de la declaracion de clave (tonalidad)
@@ -136,6 +148,31 @@ bool KeyDeclaration::resolve_names(SymbolTable& table) noexcept{
     
     table.insert("__key__");
     return true;
+}
+
+// Implementación de to_abc para KeyDeclaration
+void KeyDeclaration::to_abc(std::ostream& out, double& /*beatCounter*/) const noexcept {
+    // Convertir la nota a formato ABC
+    std::string abc_note;
+    if (root_note == "Do" || root_note == "C") abc_note = "C";
+    else if (root_note == "Re" || root_note == "D") abc_note = "D";
+    else if (root_note == "Mi" || root_note == "E") abc_note = "E";
+    else if (root_note == "Fa" || root_note == "F") abc_note = "F";
+    else if (root_note == "Sol" || root_note == "G") abc_note = "G";
+    else if (root_note == "La" || root_note == "A") abc_note = "A";
+    else if (root_note == "Si" || root_note == "B") abc_note = "B";
+    
+    // Manejar sostenidos y bemoles
+    if (root_note.find('#') != std::string::npos || root_note.find("is") != std::string::npos) {
+        abc_note += "maj"; // Mayor con sostenido
+    } else if (root_note.find('b') != std::string::npos || root_note.find("es") != std::string::npos) {
+        abc_note += "min"; // Menor con bemol
+    } else {
+        // Determinar el modo
+        abc_note += (mode == KeyMode::MAYOR) ? "maj" : "min";
+    }
+    
+    out << "K:" << abc_note << "\n";
 }
 
 // Implementación de la clase MusicProgram configuracion musical
@@ -251,4 +288,29 @@ bool MusicProgram::resolve_names(SymbolTable& table) noexcept{
     }
 
     return true;
+}
+
+// Implementación de to_abc para MusicProgram
+void MusicProgram::to_abc(std::ostream& out, double& beatCounter) const noexcept {
+    // Cabecera mínima ABC
+    out << "X:1\n";
+    out << "T:Generated\n";
+    
+    // Procesar todas las declaraciones primero
+    for (const auto& decl : declarations) {
+        decl->to_abc(out, beatCounter);
+    }
+    
+    // Procesar todas las notas
+    for (const auto& stmt : statements) {
+        stmt->to_abc(out, beatCounter);
+        
+        // Insertar barra de compás cuando se completa un compás
+        if (std::fmod(beatCounter, 7.0) == 0.0) {
+            out << "| ";
+        }
+    }
+    
+    // Finalizar la partitura con una barra final
+    out << "|\n";
 } 

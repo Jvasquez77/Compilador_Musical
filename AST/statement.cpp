@@ -63,4 +63,13 @@ bool NoteStatement::resolve_names(SymbolTable& table) noexcept{
     }
     
     return true;
+}
+
+// Implementación de to_abc para NoteStatement
+void NoteStatement::to_abc(std::ostream& out, double& beatCounter) const noexcept {
+    // Escribir la nota en formato ABC
+    out << note->as_abc() << duration->abc_suffix() << " ";
+    
+    // Actualizar el contador de beats
+    beatCounter += duration->beats();
 } 

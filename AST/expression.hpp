@@ -23,6 +23,10 @@ public:
     std::string to_string() const noexcept override;
     void destroy() noexcept override;
     bool resolve_names(SymbolTable& table) noexcept override;
+    void to_abc(std::ostream& out, double &beatCounter) const noexcept override;
+    
+    // Método auxiliar para obtener la nota en formato ABC
+    std::string as_abc() const noexcept;
 
 private:
     std::string note_name;
@@ -37,6 +41,11 @@ public:
     std::string to_string() const noexcept override;
     void destroy() noexcept override;
     bool resolve_names(SymbolTable& table) noexcept override;
+    void to_abc(std::ostream& out, double &beatCounter) const noexcept override;
+    
+    // Métodos auxiliares para notación ABC
+    std::string abc_suffix() const noexcept;
+    double beats() const noexcept;
 
 private:
     DurationType duration_type;

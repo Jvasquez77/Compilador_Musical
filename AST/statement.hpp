@@ -17,6 +17,7 @@ public:
     std::string to_string() const noexcept override;
     void destroy() noexcept override;
     bool resolve_names(SymbolTable& table) noexcept override;
+    void to_abc(std::ostream& out, double &beatCounter) const noexcept override;
 
 private:
     NoteExpression* note;
