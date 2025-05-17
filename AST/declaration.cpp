@@ -152,7 +152,7 @@ bool KeyDeclaration::resolve_names(SymbolTable& table) noexcept{
 
 // Implementación de to_abc para KeyDeclaration
 void KeyDeclaration::to_abc(std::ostream& out, double& /*beatCounter*/) const noexcept {
-    // Convertir la nota a formato ABC
+    // Convertir la nota base de una tonalidad a formato ABC
     std::string abc_note;
     if (root_note == "Do" || root_note == "C") abc_note = "C";
     else if (root_note == "Re" || root_note == "D") abc_note = "D";

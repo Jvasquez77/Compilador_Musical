@@ -167,7 +167,7 @@ int main() {
                 std::cout << "-----------------------------------\n";
             }
         } else {
-            std::cerr << "Error: No se pudo abrir el archivo para escritura.\n";
+            std::cerr << "Error: No se pudo abrir el archivo.\n";
         }
     } else {
         std::cerr << "Error: El programa no es válido semánticamente.\n";

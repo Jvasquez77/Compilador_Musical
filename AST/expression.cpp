@@ -120,7 +120,7 @@ std::string NoteExpression::as_abc() const noexcept {
         }
     }
     
-    // Convertir nombre de nota base a notación ABC
+    // Convertir nombre de notas individuales a notación ABC
     if (base_note == "Do" || base_note == "C") abc_note = "C";
     else if (base_note == "Re" || base_note == "D") abc_note = "D";
     else if (base_note == "Mi" || base_note == "E") abc_note = "E";
