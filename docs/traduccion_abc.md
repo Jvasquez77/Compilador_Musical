@@ -169,9 +169,4 @@ L:1/8
 K:Cmaj
 C2 D2 E2 F2 |
 ```
-
-## Consideraciones Importantes
-
-1. **Manejo de errores**: La fase de traducción asume que el programa ha pasado correctamente la validación semántica.
-2. **Compatibilidad**: El formato ABC generado es compatible con herramientas estándar de procesamiento ABC.
-3. **Extensibilidad**: El diseño permite añadir fácilmente nuevos elementos musicales mediante la extensión del método `to_abc()` en las clases correspondientes. 
+ El formato ABC generado es compatible con herramientas estándar de procesamiento ABC y admisible en el protocolo de comunicacion de MIDI.
