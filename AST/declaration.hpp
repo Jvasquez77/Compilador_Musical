@@ -48,9 +48,9 @@ private:
 // Declaración de clave (tonalidad)
 class KeyDeclaration : public Declaration{
 public:
-    KeyDeclaration(const std::string& root_note, KeyMode mode) noexcept;
+    KeyDeclaration(const std::string& note, KeyMode mode) noexcept;
 
-    std::string get_root_note() const noexcept;
+    std::string get_note() const noexcept;
     KeyMode get_mode() const noexcept;
     std::string to_string() const noexcept override;
     void destroy() noexcept override;
@@ -58,7 +58,7 @@ public:
     void to_abc(std::ostream& out, double &beatCounter) const noexcept override;
 
 private:
-    std::string root_note;
+    std::string note;
     KeyMode mode;
 };
 

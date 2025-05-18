@@ -93,11 +93,11 @@ void TimeSignatureDeclaration::to_abc(std::ostream& out, double& /*beatCounter*/
 }
 
 // implementacion de la declaracion de clave (tonalidad)
-KeyDeclaration::KeyDeclaration(const std::string& root_note, KeyMode mode) noexcept
-    : root_note{root_note}, mode{mode} {}
+KeyDeclaration::KeyDeclaration(const std::string& note, KeyMode mode) noexcept
+    : note{note}, mode{mode} {}
 
-std::string KeyDeclaration::get_root_note() const noexcept {
-    return root_note;
+std::string KeyDeclaration::get_note() const noexcept {
+    return note;
 }
 
 KeyMode KeyDeclaration::get_mode() const noexcept {
@@ -106,7 +106,7 @@ KeyMode KeyDeclaration::get_mode() const noexcept {
 
 std::string KeyDeclaration::to_string() const noexcept {
     std::string mode_str = (mode == KeyMode::MAYOR) ? "M" : "m";
-    return "Tonalidad " + root_note + " " + mode_str;
+    return "Tonalidad " + note + " " + mode_str;
 }
 
 void KeyDeclaration::destroy() noexcept {
@@ -131,9 +131,9 @@ bool KeyDeclaration::resolve_names(SymbolTable& table) noexcept{
                                           };
     
     bool valid_root = false;
-    for (const auto& note : valid_notes)
+    for (const auto& note_for_comparison : valid_notes)
     {
-        if (root_note == note)
+        if (note == note_for_comparison)
         {
             valid_root = true;
             break;
@@ -142,7 +142,7 @@ bool KeyDeclaration::resolve_names(SymbolTable& table) noexcept{
     
     if (!valid_root)
     {
-        std::cerr << "Error: Nota raíz inválida: " << root_note << ".\n";
+        std::cerr << "Error: Nota raíz inválida: " << note << ".\n";
         return false;
     }
     
@@ -154,18 +154,18 @@ bool KeyDeclaration::resolve_names(SymbolTable& table) noexcept{
 void KeyDeclaration::to_abc(std::ostream& out, double& /*beatCounter*/) const noexcept {
     // Convertir la nota base de una tonalidad a formato ABC
     std::string abc_note;
-    if (root_note == "Do" || root_note == "C") abc_note = "C";
-    else if (root_note == "Re" || root_note == "D") abc_note = "D";
-    else if (root_note == "Mi" || root_note == "E") abc_note = "E";
-    else if (root_note == "Fa" || root_note == "F") abc_note = "F";
-    else if (root_note == "Sol" || root_note == "G") abc_note = "G";
-    else if (root_note == "La" || root_note == "A") abc_note = "A";
-    else if (root_note == "Si" || root_note == "B") abc_note = "B";
+    if (note == "Do" || note == "C") abc_note = "C";
+    else if (note == "Re" || note == "D") abc_note = "D";
+    else if (note == "Mi" || note == "E") abc_note = "E";
+    else if (note == "Fa" || note == "F") abc_note = "F";
+    else if (note == "Sol" || note == "G") abc_note = "G";
+    else if (note == "La" || note == "A") abc_note = "A";
+    else if (note == "Si" || note == "B") abc_note = "B";
     
     // Manejar sostenidos y bemoles
-    if (root_note.find('#') != std::string::npos || root_note.find("is") != std::string::npos) {
+    if (note.find('#') != std::string::npos || note.find("is") != std::string::npos) {
         abc_note += "maj"; // Mayor con sostenido
-    } else if (root_note.find('b') != std::string::npos || root_note.find("es") != std::string::npos) {
+    } else if (note.find('b') != std::string::npos || note.find("es") != std::string::npos) {
         abc_note += "min"; // Menor con bemol
     } else {
         // Determinar el modo
@@ -294,7 +294,7 @@ bool MusicProgram::resolve_names(SymbolTable& table) noexcept{
 void MusicProgram::to_abc(std::ostream& out, double& beatCounter) const noexcept {
     // Cabecera mínima ABC
     out << "X:1\n";
-    out << "T:Generated\n";
+    out << "T:LJ CERTIFIED TRANSLATION\n";
     
     // Procesar todas las declaraciones primero
     for (const auto& decl : declarations) {
